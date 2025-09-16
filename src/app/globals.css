@@ -4,6 +4,30 @@
 @tailwind utilities;
 
 
+/* =================================================================
+   2. THE FIX FOR TAILWIND TYPOGRAPHY (`prose`)
+   ================================================================= */
+/*
+   By default, Tailwind's base styles (Preflight) remove most styling
+   from headings. This CSS block specifically tells headings *inside* an element
+   with the `prose` class to regain their proper sizes and margins,
+   ensuring your Markdown is rendered beautifully.
+*/
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    font-size: revert; /* Revert to the browser's default size for the heading level */
+    font-weight: revert; /* Revert to the browser's default boldness */
+    margin-top: revert; /* Revert to default spacing */
+    margin-bottom: revert;
+}
+
+/* You can also add more specific styles if you want */
+.prose h1 {
+    @apply text-3xl font-bold mb-4; /* Example using Tailwind's @apply directive */
+}
+.prose h2 {
+    @apply text-2xl font-bold mb-3;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

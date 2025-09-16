@@ -1,39 +1,97 @@
-/* =================================================================
-   1. TAILWIND DIRECTIVES (Required)
-   ================================================================= */
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
-/* =================================================================
-   2. THE FIX FOR TAILWIND TYPOGRAPHY (`prose`)
-   ================================================================= */
-/*
-   By default, Tailwind's base styles (Preflight) remove most styling
-   from headings. This CSS block specifically tells headings *inside* an element
-   with the `prose` class to regain their proper sizes and margins,
-   ensuring your Markdown is rendered beautifully.
-*/
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    font-size: revert; /* Revert to the browser's default size for the heading level */
-    font-weight: revert; /* Revert to the browser's default boldness */
-    margin-top: revert; /* Revert to default spacing */
-    margin-bottom: revert;
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* You can also add more specific styles if you want */
-.prose h1 {
-    @apply text-3xl font-bold mb-4; /* Example using Tailwind's @apply directive */
-}
-.prose h2 {
-    @apply text-2xl font-bold mb-3;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
 
-/* =================================================================
-   3. STYLES FOR YOUR DOCS LAYOUT
-   ================================================================= */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.doc-page-container {
+    display: flex;
+}
+.doc-sidebar {
+    width: 250px;
+    padding: 1.5rem;
+    border-right: 1px solid #e5e7eb;
+}
+.doc-content {
+    flex: 1;
+    padding: 1.5rem;
+}
+/* Add these styles for rehype-pretty-code */
+
+/* Set a background color for the code blocks */
+pre {
+    background-color: #24292e; /* This should match your chosen theme (e.g., github-dark) */
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto; /* Allow horizontal scrolling for long lines */
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+/* Style for the code itself */
+pre code {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; /* Recommended fonts with ligatures */
+}
+
+/* --- OPTIONAL STYLES FOR HIGHLIGHTING FEATURES --- */
+
+/* Add a background color to a highlighted line */
+.line.highlighted {
+    background-color: rgba(255, 255, 255, 0.1);
+    display: block;
+    margin: 0 -1rem; /* Extend the highlight to the edges of the pre block */
+    padding: 0 1rem;
+    border-left: 3px solid #0070f3; /* Add a little accent border */
+}
+
+/* Add a background color to a highlighted word */
+.word--highlighted {
+    background-color: rgba(0, 112, 243, 0.5);
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+}
+
+/* Style for line numbers (if you enable them) */
+pre[data-line-numbers] > code {
+    display: grid;
+    counter-reset: line;
+}
+
+pre[data-line-numbers] > code .line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 2.5rem; /* Adjust width as needed */
+    margin-right: 1.5rem;
+    text-align: right;
+    color: #888;
+}
+
 :root {
     --sidebar-width: 280px;
     --header-height: 60px;
@@ -51,7 +109,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb; /* light gray border */
     flex-shrink: 0;
 }
 
@@ -68,7 +126,7 @@
 .docs-body {
     display: flex;
     flex: 1;
-    overflow: hidden;
+    overflow: hidden; /* Prevent the whole page from scrolling */
 }
 
 .doc-sidebar {
@@ -76,77 +134,11 @@
     flex-shrink: 0;
     padding: 1.5rem;
     border-right: 1px solid #e5e7eb;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow the sidebar itself to scroll if content is long */
 }
 
 .doc-content {
     flex: 1;
     padding: 2rem;
-    overflow-y: auto;
-}
-
-
-/* =================================================================
-   4. STYLES FOR SYNTAX HIGHLIGHTING (rehype-pretty-code)
-   ================================================================= */
-pre {
-    background-color: #24292e !important; /* Use !important to override prose styles if needed */
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 0.9em;
-    line-height: 1.6;
-}
-
-pre code {
-    font-family: 'Fira Code', 'JetBrains Mono', monospace;
-}
-
-/* Style for highlighted lines */
-.line.highlighted {
-    background-color: rgba(255, 255, 255, 0.1);
-    display: block;
-    margin: 0 -1rem;
-    padding: 0 1rem;
-    border-left: 3px solid #0070f3;
-}
-
-/* Style for highlighted words */
-.word--highlighted {
-    background-color: rgba(0, 112, 243, 0.5);
-    padding: 0.1em 0.3em;
-    border-radius: 4px;
-}
-
-
-/* =================================================================
-   5. STYLES FOR ANCHOR LINKS ON HEADINGS
-   ================================================================= */
-.prose h2, .prose h3, .prose h4 {
-    position: relative; /* Required for absolute positioning of the anchor link */
-}
-
-.prose h2 .anchor,
-.prose h3 .anchor,
-.prose h4 .anchor {
-    position: absolute;
-    transform: translateX(-110%);
-    text-decoration: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.prose h2:hover .anchor,
-.prose h3:hover .anchor,
-.prose h4:hover .anchor {
-    opacity: 0.7;
-}
-
-.prose .anchor:hover {
-    opacity: 1;
-}
-
-.prose .anchor-icon {
-    font-style: normal;
-    font-weight: normal;
+    overflow-y: auto; /* Allow the main content area to scroll */
 }

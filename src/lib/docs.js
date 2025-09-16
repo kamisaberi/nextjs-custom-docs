@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
-import html from 'remark-html';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+import rehypePrettyCode from 'rehype-pretty-code';
 
 // Get the absolute path to the 'content/docs' directory
 const docsDirectory = path.join(process.cwd(), 'content/docs');
@@ -32,7 +35,6 @@ function getMarkdownFiles(dir) {
         if (entry.isDirectory()) {
             files = files.concat(getMarkdownFiles(fullPath));
         } else if (entry.isFile() && entry.name.endsWith('.md')) {
-            // Return the path relative to the base 'docs' directory
             files.push(path.relative(docsDirectory, fullPath));
         }
     }
@@ -48,7 +50,6 @@ export function getAllDocSlugs() {
     const allFiles = getMarkdownFiles(docsDirectory);
 
     return allFiles.map((filePath) => {
-        // Remove the .md extension and split by the OS-specific separator
         const slug = filePath.replace(/\.md$/, '').split(path.sep);
         return { params: { slug } };
     });
@@ -56,6 +57,7 @@ export function getAllDocSlugs() {
 
 /**
  * Gets the parsed content and metadata for a single document.
+ * This function includes the syntax highlighting logic.
  * @param {string[]} slug - An array of path segments from the URL.
  * @returns {object | null} The document data or null if not found.
  */
@@ -63,28 +65,48 @@ export async function getDocData(slug) {
     const fullPath = path.join(docsDirectory, `${slug.join('/')}.md`);
 
     if (!fs.existsSync(fullPath)) {
-        return null; // Handle case where file doesn't exist
+        return null;
     }
 
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // Use gray-matter to parse the frontmatter (metadata)
     const matterResult = matter(fileContents);
 
-    // Use remark to convert markdown into an HTML string
+    // Use remark and rehype to process the markdown with rehype-pretty-code
     const processedContent = await remark()
-        .use(html)
+        .use(remarkParse)
+        .use(remarkRehype)
+        .use(rehypePrettyCode, {
+            // Use a VS Code theme for syntax highlighting
+            // Find more themes here: https://github.com/shikijs/shiki/blob/main/docs/themes.md
+            theme: 'github-dark',
+
+            // Keep the background color of the code block.
+            keepBackground: true,
+
+            // Custom callbacks for highlighting features
+            onVisitLine(node) {
+                if (node.children.length === 0) {
+                    node.children = [{ type: 'text', value: ' ' }];
+                }
+            },
+            onVisitHighlightedLine(node) {
+                node.properties.className.push('highlighted');
+            },
+            onVisitHighlightedWord(node) {
+                node.properties.className = ['word--highlighted'];
+            },
+        })
+        .use(rehypeStringify)
         .process(matterResult.content);
+
     const contentHtml = processedContent.toString();
 
-    // Return all the data
     return {
         slug,
         contentHtml,
         ...matterResult.data, // This is your frontmatter (e.g., title, description)
     };
 }
-
 
 /**
  * Recursively scans a directory and builds a nested navigation tree.
@@ -98,7 +120,7 @@ function generateNavTree(dir) {
 
     // First, process all the files, sorting 'index.md' to the top.
     const files = entries.filter(e => e.isFile() && e.name.endsWith('.md'));
-    files.sort((a, b) => (a.name === 'index.md' ? -1 : b.name === 'index.md' ? 1 : 0));
+    files.sort((a, b) => (a.name === 'index.md' ? -1 : b.name === 'index.md' ? 1 : a.name.localeCompare(b.name)));
 
     for (const entry of files) {
         const fullPath = path.join(dir, entry.name);
@@ -116,13 +138,15 @@ function generateNavTree(dir) {
 
         navTree.push({
             type: 'file',
-            name: data.title || formatTitle(path.basename(slug)),
+            name: data.title || formatTitle(path.basename(slug)), // Use frontmatter title if available
             path: `/docs/${slug}`,
         });
     }
 
     // Then, process all the subdirectories
     const directories = entries.filter(e => e.isDirectory());
+    directories.sort((a,b) => a.name.localeCompare(b.name)); // Sort directories alphabetically
+
     for (const entry of directories) {
         const fullPath = path.join(dir, entry.name);
         navTree.push({

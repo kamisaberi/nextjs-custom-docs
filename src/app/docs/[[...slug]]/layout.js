@@ -1,33 +1,55 @@
 import { getNavigationTree } from '@/lib/docs';
-import Navigation from '@/components/Navigation'; // Your client component from the previous step
-import Link from 'next/link'; // Import Link for the header
+import Navigation from '@/components/Navigation'; // Your interactive client component for the sidebar
+import Link from 'next/link'; // For the header logo/link
 
-// This is an async Server Component, which is the modern Next.js way.
+// ================================================================
+// THE DOCS LAYOUT: src/app/docs/[[...slug]]/layout.js
+// ================================================================
+// This component wraps ONLY the pages inside the /docs route.
+// It is rendered inside the RootLayout's {children}.
+// ================================================================
+
+// This layout is a Server Component, so it can be async to fetch data.
 export default async function DocsLayout({ children }) {
-    // 1. Fetch the navigation tree on the server.
-    // This happens once at build time for static pages, or on request for dynamic ones.
+    // 1. FETCH THE NAVIGATION TREE ON THE SERVER
+    // This happens once at build time for static pages or on request for dynamic ones.
+    // The data is then passed down to the client component.
     const navTree = getNavigationTree();
 
     return (
-        <div className="doc-page-container">
-            {/* Example static header for the docs section */}
+        <div className="docs-container">
+            {/*
+        This is a simple header specific to your documentation section.
+        You can customize it or remove it entirely.
+      */}
             <header className="docs-header">
-                <Link href="/">My Logo</Link>
-                <nav>
-                    <Link href="/docs">Docs</Link>
+                <Link href="/" className="logo-link">
+                    {/* You can place your logo SVG or an <img> tag here */}
+                    <span>Aryorithm Docs</span>
+                </Link>
+                <div className="header-nav-links">
+                    <Link href="/docs">Documentation</Link>
                     <Link href="/blog">Blog</Link>
-                </nav>
+                    <Link href="/login" className="header-login-button">Sign In</Link>
+                </div>
             </header>
 
             <div className="docs-body">
-                {/* The sidebar that will contain our dynamic navigation */}
+                {/* THE DYNAMIC SIDEBAR */}
                 <aside className="doc-sidebar">
-                    {/* 2. Pass the server-fetched `navTree` data as a prop
-                 to the interactive `Navigation` client component. */}
+                    {/*
+            2. RENDER THE NAVIGATION COMPONENT
+            We pass the `navTree` data, which was fetched on the server,
+            as a prop to our interactive <Navigation> client component.
+            This is the recommended pattern for mixing server and client components.
+          */}
                     <Navigation navTree={navTree} />
                 </aside>
 
-                {/* The main content area where your page.js will be rendered */}
+                {/*
+          THE MAIN CONTENT AREA
+          This is where the {children} - your `page.js` template - will be rendered.
+        */}
                 <main className="doc-content">
                     {children}
                 </main>
@@ -36,12 +58,10 @@ export default async function DocsLayout({ children }) {
     );
 }
 
-// NOTE: You will need to add some basic CSS to `globals.css`
-// to make this layout look good. For example:
+// ================================================================
+// RECOMMENDED CSS FOR THIS LAYOUT
+// ================================================================
+// Add this to your `src/app/globals.css` file to style the layout.
 /*
-.doc-page-container { ... }
-.docs-header { display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #eee; }
-.docs-body { display: flex; }
-.doc-sidebar { width: 280px; padding: 1.5rem; border-right: 1px solid #eee; }
-.doc-content { flex: 1; padding: 1.5rem; }
+
 */

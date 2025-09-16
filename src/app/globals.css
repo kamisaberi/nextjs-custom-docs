@@ -87,3 +87,54 @@ pre[data-line-numbers] > code .line::before {
     text-align: right;
     color: #888;
 }
+
+:root {
+    --sidebar-width: 280px;
+    --header-height: 60px;
+}
+
+.docs-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.docs-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid #e5e7eb; /* light gray border */
+    flex-shrink: 0;
+}
+
+.logo-link {
+    font-weight: bold;
+}
+
+.header-nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.docs-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; /* Prevent the whole page from scrolling */
+}
+
+.doc-sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    padding: 1.5rem;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto; /* Allow the sidebar itself to scroll if content is long */
+}
+
+.doc-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto; /* Allow the main content area to scroll */
+}

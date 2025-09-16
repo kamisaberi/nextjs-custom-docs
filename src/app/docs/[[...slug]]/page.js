@@ -39,7 +39,8 @@ export default async function DocPageTemplate({ params }) {
                 {/* In a real app, you'd dynamically generate this */}
                 <ul>
                     <li><a href="/docs">Home</a></li>
-                    <li><a href="/docs/topic-one">Topic One</a></li>
+                    <li><a href="/docs/installation">installation</a></li>
+                    <li><a href="/docs/quickstart">quickstart</a></li>
                 </ul>
             </aside>
 

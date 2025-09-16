@@ -37,3 +37,53 @@ body {
     flex: 1;
     padding: 1.5rem;
 }
+/* Add these styles for rehype-pretty-code */
+
+/* Set a background color for the code blocks */
+pre {
+    background-color: #24292e; /* This should match your chosen theme (e.g., github-dark) */
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto; /* Allow horizontal scrolling for long lines */
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+/* Style for the code itself */
+pre code {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace; /* Recommended fonts with ligatures */
+}
+
+/* --- OPTIONAL STYLES FOR HIGHLIGHTING FEATURES --- */
+
+/* Add a background color to a highlighted line */
+.line.highlighted {
+    background-color: rgba(255, 255, 255, 0.1);
+    display: block;
+    margin: 0 -1rem; /* Extend the highlight to the edges of the pre block */
+    padding: 0 1rem;
+    border-left: 3px solid #0070f3; /* Add a little accent border */
+}
+
+/* Add a background color to a highlighted word */
+.word--highlighted {
+    background-color: rgba(0, 112, 243, 0.5);
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+}
+
+/* Style for line numbers (if you enable them) */
+pre[data-line-numbers] > code {
+    display: grid;
+    counter-reset: line;
+}
+
+pre[data-line-numbers] > code .line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 2.5rem; /* Adjust width as needed */
+    margin-right: 1.5rem;
+    text-align: right;
+    color: #888;
+}

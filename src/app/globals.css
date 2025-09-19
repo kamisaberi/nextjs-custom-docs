@@ -4,6 +4,16 @@
 /*@tailwind utilities;*/
 @tailwind utilities;
 
+/* Add this rule to your global stylesheet */
+html {
+    scroll-behavior: smooth;
+}
+
+.doc-content {
+    /* ... your existing styles (flex: 1, padding, etc.) ... */
+    scroll-behavior: smooth;
+}
+
 
 /* =================================================================
    2. THE FIX FOR TAILWIND TYPOGRAPHY (`prose`)
@@ -166,4 +176,74 @@ pre[data-line-numbers] > code .line::before {
     flex: 1;
     padding: 2rem;
     overflow-y: auto; /* Allow the main content area to scroll */
+}
+
+/* --- Styles for the page layout with TOC --- */
+.doc-page-with-toc {
+    display: flex;
+    gap: 2rem; /* Space between content and TOC */
+}
+
+/* Make the main article take up most of the space */
+.doc-page-with-toc > article {
+    flex: 1;
+    min-width: 0; /* Prevents flexbox overflow */
+}
+
+/* Style for the container of the TOC */
+.toc-container {
+    width: 240px; /* Fixed width for the TOC sidebar */
+    flex-shrink: 0;
+}
+
+
+/* --- Styles for the Table of Contents component itself --- */
+.toc-sidebar {
+    position: sticky; /* Make it stick to the top as you scroll */
+    top: 6rem; /* Adjust this value based on your header height */
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+}
+
+.toc-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.toc-sidebar ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.toc-sidebar li {
+    margin-bottom: 0.25rem;
+}
+
+/* Indent h3 links to show hierarchy */
+.toc-item.toc-h3 {
+    padding-left: 1rem;
+}
+
+.toc-link {
+    display: block;
+    color: #6b7280; /* Gray text for inactive links */
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+    border-left: 2px solid transparent;
+    padding: 4px 12px;
+}
+
+.toc-link:hover {
+    color: #111827; /* Darker text on hover */
+}
+
+/* Style for the active link */
+.toc-link.active {
+    color: #0070f3; /* Blue text for the active link */
+    font-weight: 500;
+    border-left-color: #0070f3; /* Blue border for the active link */
 }
